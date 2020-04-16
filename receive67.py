@@ -3,26 +3,38 @@ import time
 
 #run with sudo, else port 67 is not allowed.
 
+LESS_IP = "<broadcast>"
+LESS_PORT = 2880
+
 UDP_IP = ""
 UDP_PORT = 2880
 DHCP_PORT = 67
 UDP_RECEIVE_LENGTH = 1024
 
-sock = socket.socket(socket.AF_INET, # Internet
+broadcastSocket = socket.socket(socket.AF_INET, # Internet
                      socket.SOCK_DGRAM) # UDP
-sock.bind((UDP_IP, DHCP_PORT))
+
+# Enable broadcasting mode
+broadcastSocket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+
+listeningSocket = socket.socket(socket.AF_INET, # Internet
+                     socket.SOCK_DGRAM) # UDP
+listeningSocket.bind((UDP_IP, DHCP_PORT))
 
 outFile = open("dhcpOut.txt","w")
 outFile.write("")
 outFile.close()
+errFile = open("errorLog67.txt","w")
+errFile.write("")
+errFile.close()
 
 while True:
     
-        data, addr = sock.recvfrom(UDP_RECEIVE_LENGTH) # buffer size is 1024 bytes
+        data, addr = listeningSocket.recvfrom(UDP_RECEIVE_LENGTH) # buffer size is 1024 bytes
         print ("received message.")
         print ("length of data: " , len(data))
         try:
-            MAC_ADDR = " mac Address {0}:{1}:{2}:{3}:{4}:{5}\n".format(hex(data[28]),hex(data[29]),hex(data[30]),hex(data[31]),hex(data[32]),hex(data[33]))# 28-33
+            MAC_ADDR = "mac Address {0}:{1}:{2}:{3}:{4}:{5}\n".format(hex(data[28]),hex(data[29]),hex(data[30]),hex(data[31]),hex(data[32]),hex(data[33]))# 28-33
             pass
         except TypeError:
             print("****************TYPE ERROR**********")
@@ -37,6 +49,11 @@ while True:
             print(MAC_ADDR)
             print ("options: ", data[236:])
 
+            #notify listening devices
+            MAC_PACKET = MAC_ADDR.encode()
+            broadcastSocket.sendto(MAC_ADDR.encode(),(LESS_IP,LESS_PORT))
+
+            #leave a trace
             outFile = open("dhcpOut.txt","a")    
             outFile.write(time.asctime(time.localtime()))
             outFile.write(MAC_ADDR)
