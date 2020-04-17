@@ -1,32 +1,46 @@
 import sqlite3
 
 
+class MacInfo(object):
+    def __init__(self, operation, mac, watch, hostname, statement=None ):
+      self.operation = operation
+      self.mac = mac
+      self.watch = watch
+      self.hostname = hostname
+      self.statement = statement
+
+
 def insert(database, macInfo):
-    database.execute("INSERT INTO ADDRESS_BOOK(MAC, WATCH, HOSTNAME) VALUES('123', 1, 'test')")
+    sqlStr = "INSERT INTO ADDRESS_BOOK(MAC, WATCH, HOSTNAME) VALUES('{}', {}, '{}')".format(macInfo.mac, macInfo.watch, macInfo.hostname)
+    database.execute(sqlStr)
     database.commit()
-    print("inserted: ", macInfo)
+    print("inserted: '{}', {}, '{}' into ADDRESS_BOOK".format(macInfo.mac, macInfo.watch, macInfo.hostname))
 
 def select(database, sqlString):
-    results = database.execute("SELECT * from ADDRESS_BOOK")
+    results = database.execute(sqlString)
+    print("Select Results: for query " + sqlString)
     for row in results:
         print(row)
 
 def updateHostname(database, macInfo):
-    database.execute("UPDATE ADDRESS_BOOK set HOSTNAME = 'update' where MAC = '123'")
+    sqlStr = "UPDATE ADDRESS_BOOK set HOSTNAME = '{}' where MAC = '{}'".format(macInfo.hostname,macInfo.mac)
+    database.execute(sqlStr)
     database.commit()
-    print("updated: ", macInfo)
+    print("updated hostname: '{}', {}, '{}' in ADDRESS_BOOK".format(macInfo.mac, macInfo.watch, macInfo.hostname))
 
 def updateWatch(database, macInfo):
-    database.execute("UPDATE ADDRESS_BOOK set WATCH = 0 where MAC = '123'")
+    sqlStr = "UPDATE ADDRESS_BOOK set WATCH = {} where MAC = '{}'".format(macInfo.watch, macInfo.mac)
+    database.execute(sqlStr)
     database.commit()
-    print("updated: ", macInfo)
+    print("updated watch status: '{}', {}, '{}' in ADDRESS_BOOK".format(macInfo.mac, macInfo.watch, macInfo.hostname))
 
 def delete(database, macInfo):
-    database.execute("DELETE from ADDRESS_BOOK where MAC = '123'")
+    sqlStr = "DELETE from ADDRESS_BOOK where MAC = '{}'".format(macInfo.mac)
+    database.execute(sqlStr)
     database.commit()
-    print("deleted: ", macInfo)
+    print("deleted: MAC = '{}' from ADDRESS_BOOK".format(macInfo.mac))
 
-#assuming that macInfo has the following properties: operation (which sql you want), mac_addr (mac address), hostname, watch (true/false), statement(only if op is select) 
+#assuming that macInfo has the following properties: operation (which sql you want), mac (mac address), hostname, watch (true/false), statement(only if op is select) 
 def dao(macInfo):
     database = sqlite3.connect('lessDB')
     print ("Opened database successfully")
@@ -40,7 +54,7 @@ def dao(macInfo):
     elif macInfo.operation == "updateWatch":
         updateWatch(database,macInfo)
     elif macInfo.operation == "select":
-        select(database,macInfo)
+        select(database,macInfo.statement)
     elif macInfo.operation == "delete":
         delete(database,macInfo)
     else:
