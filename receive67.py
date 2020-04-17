@@ -34,7 +34,7 @@ while True:
         print ("received message.")
         print ("length of data: " , len(data))
         try:
-            MAC_ADDR = "mac Address {0}:{1}:{2}:{3}:{4}:{5}\n".format(hex(data[28]),hex(data[29]),hex(data[30]),hex(data[31]),hex(data[32]),hex(data[33]))# 28-33
+            MAC_ADDR = "mac Address {0:x}:{1:x}:{2:x}:{3:x}:{4:x}:{5:x}\n".format(data[28],data[29],data[30],data[31],data[32],data[33])# 28-33
             pass
         except TypeError:
             print("****************TYPE ERROR**********")
