@@ -6,7 +6,7 @@ sock = socket.socket(socket.AF_INET, # Internet
 # Enable broadcasting mode
 sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
-UDP_IP = "<broadcast>"
+UDP_IP = "192.168.0.82"
 UDP_PORT = 2880
 MESSAGE = "**INSERT** 123, test, 1".encode()
 

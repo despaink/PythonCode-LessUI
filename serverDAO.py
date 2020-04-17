@@ -1,17 +1,39 @@
 import socket
-from dao import dao, MacInfo, remove_prefix
+from dao import dao, parsePacket
+from recvall import recvall
 
-UDP_IP = "127.0.0.1"
-UDP_PORT = 2880
+SERVER_IP = "127.0.0.1"
+LISTENING_PORT = 28801
 
-sock = socket.socket(socket.AF_INET, # Internet
-                     socket.SOCK_DGRAM) # UDP
-sock.bind((UDP_IP, UDP_PORT))
+# Create a TCP/IP socket
+sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-#It is assumed that messages will be of the format: **OPERATION** mac,hostname,watch
+# Bind the socket to the port
+server_address = (SERVER_IP, LISTENING_PORT)
+print ('starting up on %s port %s' % server_address)
+sock.bind(server_address)
+
+# Listen for incoming connections
+sock.listen(1)
+
 while True:
-    data, addr = sock.recvfrom(1024) # buffer size is 1024 bytes
+    # Wait for a connection
+    print ('waiting for a connection')
+    connection, client_address = sock.accept()
 
-    message = data.decode()
-    
-    print ("received message: ", data.decode())
+    try:
+        print ('connection from', client_address)
+        
+        message = recvall(connection)
+        print('recieved',message)
+
+        if message.startswith('**'):
+            macInfo = parsePacket(message)
+            if macInfo:
+                dao(macInfo)
+        else:
+            print ("Invalid Request")
+            
+    finally:
+        # Clean up the connection
+        connection.close()

@@ -1,6 +1,7 @@
 import sqlite3
 
-#assuming that macInfo has the following properties: operation (which sql you want), mac (mac address), hostname, watch (true/false), statement(only if op is select) 
+#assuming that macInfo has the following properties: 
+# operation (which sql you want), mac (mac address), hostname, watch (1 or 0), statement( required only if op is select) 
 class MacInfo(object):
     def __init__(self, operation, mac, hostname, watch, statement=None ):
       self.operation = operation
@@ -34,6 +35,7 @@ def dao(macInfo):
 
 def insert(database, macInfo):
     sqlStr = "INSERT INTO ADDRESS_BOOK(MAC, WATCH, HOSTNAME) VALUES('{}', {}, '{}')".format(macInfo.mac, macInfo.watch, macInfo.hostname)
+    print(sqlStr)
     database.execute(sqlStr)
     database.commit()
     print("inserted: '{}', {}, '{}' into ADDRESS_BOOK".format(macInfo.mac, macInfo.watch, macInfo.hostname))
@@ -67,6 +69,30 @@ def remove_prefix(message, prefix):
     if message.startswith(prefix):
         return message[len(prefix):]
     return message
+
+
+def parsePacket(packet):
+    packet = remove_prefix(packet,"**")
+    print(packet)
+    parsed = packet.split(",")
+    cleaned = list(map(lambda x: x.strip(),parsed))
+    nItems = len(cleaned)
+
+    if nItems < 4 or nItems > 5:
+        print("Invalid Packet length, see MacInfo class for details.")
+        return None
+    elif (cleaned[0] == "select" and nItems < 5):
+        print("Invalid Select packet, see MacInfo class for details.")
+        return None
+    elif (cleaned[0] != "select" and nItems == 5):
+        print("Invalid nonSelect packet, see MacInfo class for details.")
+        return None
+    elif nItems == 4:
+        return MacInfo(cleaned[0], cleaned[1], cleaned[2], cleaned[3])
+    elif nItems == 5:
+        return MacInfo(cleaned[0], cleaned[1], cleaned[2], cleaned[3], cleaned[4])
+    
+
 
 
 
