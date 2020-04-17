@@ -1,13 +1,35 @@
 import sqlite3
 
-
+#assuming that macInfo has the following properties: operation (which sql you want), mac (mac address), hostname, watch (true/false), statement(only if op is select) 
 class MacInfo(object):
-    def __init__(self, operation, mac, watch, hostname, statement=None ):
+    def __init__(self, operation, mac, hostname, watch, statement=None ):
       self.operation = operation
       self.mac = mac
       self.watch = watch
       self.hostname = hostname
       self.statement = statement
+
+def dao(macInfo):
+    database = sqlite3.connect('lessDB')
+    print ("Opened database successfully")
+
+    if not hasattr(macInfo,'operation'):
+        print("ERROR: Missing macInfo.operation")
+    elif macInfo.operation == "insert":
+        insert(database,macInfo)
+    elif macInfo.operation == "updateHostname":
+        updateHostname(database,macInfo)
+    elif macInfo.operation == "updateWatch":
+        updateWatch(database,macInfo)
+    elif macInfo.operation == "select":
+        select(database,macInfo.statement)
+    elif macInfo.operation == "delete":
+        delete(database,macInfo)
+    else:
+        print("ERROR: Invalid DAO operation")
+
+    database.close()
+    print("Closed database")
 
 
 def insert(database, macInfo):
@@ -40,28 +62,14 @@ def delete(database, macInfo):
     database.commit()
     print("deleted: MAC = '{}' from ADDRESS_BOOK".format(macInfo.mac))
 
-#assuming that macInfo has the following properties: operation (which sql you want), mac (mac address), hostname, watch (true/false), statement(only if op is select) 
-def dao(macInfo):
-    database = sqlite3.connect('lessDB')
-    print ("Opened database successfully")
 
-    if not hasattr(macInfo,'operation'):
-        print("ERROR: Missing macInfo.operation")
-    elif macInfo.operation == "insert":
-        insert(database,macInfo)
-    elif macInfo.operation == "updateHostname":
-        updateHostname(database,macInfo)
-    elif macInfo.operation == "updateWatch":
-        updateWatch(database,macInfo)
-    elif macInfo.operation == "select":
-        select(database,macInfo.statement)
-    elif macInfo.operation == "delete":
-        delete(database,macInfo)
-    else:
-        print("ERROR: Invalid DAO operation")
+def remove_prefix(message, prefix):
+    if message.startswith(prefix):
+        return message[len(prefix):]
+    return message
 
-    database.close()
-    print("Closed database")
+
+
 
 
 
