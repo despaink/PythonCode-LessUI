@@ -8,7 +8,7 @@ sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
 UDP_IP = "<broadcast>"
 UDP_PORT = 2880
-MESSAGE = "Hello, from Pi broadcast 3.".encode()
+MESSAGE = "**INSERT** 123, test, 1".encode()
 
 print ("UDP target IP:", UDP_IP)
 print ("UDP target port:", UDP_PORT)
