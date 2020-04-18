@@ -23,7 +23,7 @@ def dao(macInfo):
     elif macInfo.operation == "updateWatch":
         updateWatch(database,macInfo)
     elif macInfo.operation == "select":
-        return select(database,macInfo.statement)
+        select(database,macInfo.statement)
     elif macInfo.operation == "delete":
         delete(database,macInfo)
     else:
@@ -44,7 +44,7 @@ def select(database, sqlString):
     results = database.execute(sqlString)
     print("Select Results: for query " + sqlString)
     for row in results:
-        return row
+        print(row)
 
 def updateHostname(database, macInfo):
     sqlStr = "UPDATE ADDRESS_BOOK set HOSTNAME = '{}' where MAC = '{}'".format(macInfo.hostname,macInfo.mac)

@@ -2,19 +2,14 @@ import socket
 from dao import dao, parsePacket
 from recvall import recvall
 
-## getting the hostname by socket.gethostname() method
-hostname = socket.gethostname()
-## getting the IP address using socket.gethostbyname() method
-SERVER_IP = socket.gethostbyname(hostname)
-
-
+SERVER_IP = "127.0.0.1"
 LISTENING_PORT = 28801
 
 # Create a TCP/IP socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 # Bind the socket to the port
-server_address = ('192.168.0.82', LISTENING_PORT)
+server_address = (SERVER_IP, LISTENING_PORT)
 print ('starting up on %s port %s' % server_address)
 sock.bind(server_address)
 
@@ -23,11 +18,11 @@ sock.listen(1)
 
 while True:
     # Wait for a connection
-    #print ('waiting for a connection')
+    print ('waiting for a connection')
     connection, client_address = sock.accept()
 
     try:
-        #print ('connection from', client_address)
+        print ('connection from', client_address)
         
         message = recvall(connection)
         print('recieved',message)
@@ -38,7 +33,6 @@ while True:
                 dao(macInfo)
         else:
             print ("Invalid Request")
-            connection.sendall("Invalid Request".encode())
             
     finally:
         # Clean up the connection

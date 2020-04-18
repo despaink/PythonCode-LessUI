@@ -1,8 +1,5 @@
 import socket
 import time
-import dao
-from functools import reduce
-import operator
 
 #run with sudo, else port 67 is not allowed.
 
@@ -37,7 +34,7 @@ while True:
         print ("received message.")
         print ("length of data: " , len(data))
         try:
-            MAC_ADDR = "{0:x}:{1:x}:{2:x}:{3:x}:{4:x}:{5:x}".format(data[28],data[29],data[30],data[31],data[32],data[33])# 28-33
+            MAC_ADDR = "mac Address {0:x}:{1:x}:{2:x}:{3:x}:{4:x}:{5:x}\n".format(data[28],data[29],data[30],data[31],data[32],data[33])# 28-33
             pass
         except TypeError:
             print("****************TYPE ERROR**********")
@@ -52,19 +49,9 @@ while True:
             print(MAC_ADDR)
             print ("options: ", data[236:])
 
-            watched = dao.dao(dao.MacInfo('select',None,None,None,"select * from address_book where mac = '{}'".format(MAC_ADDR)))
-            
             #notify listening devices
-            if watched is None:
-                broadcastSocket.sendto(MAC_ADDR.encode(),(LESS_IP,LESS_PORT))
-            else:
-                if watched[1] == 1:
-                    print("Watching: {}".format(watched))
-                    msg = "{} who you wanted to **watch**, has connected to your WI-FI".format(watched[2])
-                    broadcastSocket.sendto(msg.encode(),(LESS_IP,LESS_PORT))
-                else:
-                    print("Ignoring: " + watched[2])
-
+            MAC_PACKET = MAC_ADDR.encode()
+            broadcastSocket.sendto(MAC_ADDR.encode(),(LESS_IP,LESS_PORT))
 
             #leave a trace
             outFile = open("dhcpOut.txt","a")    
