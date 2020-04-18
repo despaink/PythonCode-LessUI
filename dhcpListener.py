@@ -60,7 +60,7 @@ while True:
             else:
                 if watched[1] == 1:
                     print("Watching: {}".format(watched))
-                    msg = "{} who you wanted to **watch**, has connected to your WI-FI".format(watched[2])
+                    msg = "{} **watch** has connected to your WI-FI".format(watched[2])
                     broadcastSocket.sendto(msg.encode(),(LESS_IP,LESS_PORT))
                 else:
                     print("Ignoring: " + watched[2])
